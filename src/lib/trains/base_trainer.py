@@ -17,8 +17,8 @@ class ModleWithLoss(torch.nn.Module):
   
   def forward(self, batch):
     outputs = self.model(batch['input'])
-    loss, loss_stats = self.loss(outputs, batch)
-    return outputs[-1], loss, loss_stats
+    loss, loss_stats = self.loss(outputs, batch)  #通过新的loss来训练模型参数
+    return outputs[-1], loss, loss_stats 
 
 class BaseTrainer(object):
   def __init__(
@@ -44,7 +44,7 @@ class BaseTrainer(object):
   def run_epoch(self, phase, epoch, data_loader):
     model_with_loss = self.model_with_loss
     if phase == 'train':
-      model_with_loss.train()
+      model_with_loss.train() 
     else:
       if len(self.opt.gpus) > 1:
         model_with_loss = self.model_with_loss.module
