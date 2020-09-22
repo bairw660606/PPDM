@@ -30,6 +30,7 @@ def create_model(arch, heads, head_conv):
   get_model = _model_factory[arch] 
   model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv) #加载预训练模型
   return model
+#载入DLA模型
 
 def load_model(model, model_path, optimizer=None, resume=False, 
                lr=None, lr_step=None):
