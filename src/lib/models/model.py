@@ -22,10 +22,13 @@ _model_factory = {
 }
 
 def create_model(arch, heads, head_conv):
-  num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0
+  num_layers = int(arch[arch.find('_') + 1:]) if '_' in arch else 0 #str1.find('_'),返回'_'的索引
+  #通过arch backbone名称确定文件名。arch.find()返回文件名索引   self.parser.add_argument('--arch', default='dla_34',
+                                                                   #help='model architecture. Currently tested'
+                                                                   #'res_18 | resdcn_18 | dla_34 | hourglass')
   arch = arch[:arch.find('_')] if '_' in arch else arch
-  get_model = _model_factory[arch]
-  model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv)
+  get_model = _model_factory[arch] 
+  model = get_model(num_layers=num_layers, heads=heads, head_conv=head_conv) #加载预训练模型
   return model
 
 def load_model(model, model_path, optimizer=None, resume=False, 
@@ -33,8 +36,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
   start_epoch = 0
   checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
   print('loaded {}, epoch {}'.format(model_path, checkpoint['epoch']))
-  state_dict_ = checkpoint['state_dict']
-  state_dict = {}
+  state_dict_ = checkpoint['state_dict'] #加载原始模型参数
+  state_dict = {} #准备创建新的模型参数
   
   # convert data_parallal to model
   for k in state_dict_:
@@ -48,9 +51,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
   for k in state_dict:
     if k in model_state_dict:
       if state_dict[k].shape != model_state_dict[k].shape:
-        print('Skip loading parameter {}, required shape{}, '\
-              'loaded shape{}.'.format(
-          k, model_state_dict[k].shape, state_dict[k].shape))
+        print('Skip loading parameter {}, required shape{}, '
+              'loaded shape{}.'.format(k, model_state_dict[k].shape, state_dict[k].shape))
         state_dict[k] = model_state_dict[k]
     else:
       print('Drop parameter {}.'.format(k))
